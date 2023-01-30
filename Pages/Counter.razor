@@ -2,15 +2,30 @@
 
 <h1>Counter</h1>
 
+<p role="time">Time: @time</p>
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
     private int currentCount = 0;
+    private string time = DateTime.Now.ToString("HH:mm:ss tt");
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+            while(await periodicTimer.WaitForNextTickAsync())
+            {
+                time = DateTime.Now.ToString("HH:mm:ss tt");
+                this.StateHasChanged();
+            }
+        }
     }
 }
