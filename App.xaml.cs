@@ -1,4 +1,6 @@
-﻿namespace m0.maui;
+﻿using System.Windows.Markup;
+
+namespace m0.maui;
 
 public partial class App : Application
 {
