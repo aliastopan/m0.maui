@@ -18,6 +18,10 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddMauiBlazorWebView();
+		builder.Services.AddScoped(_ => new HttpClient
+		{
+			BaseAddress = new Uri("http://mthrowaway488-001-site1.dtempurl.com")
+		});
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

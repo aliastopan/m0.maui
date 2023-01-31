@@ -1,22 +1,45 @@
 ﻿@page "/counter"
 @using Plugin.LocalNotification
+@using System.Net.Http.Json
+@using System.Text.Json
+@inject HttpClient httpClient
 
 <h1>Counter</h1>
 
 <p role="time">Time: @time</p>
+<p role="ppm">PPM: @_ppm</p>
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
-@code {
+@code
+{
     private int currentCount = 0;
     private string time = DateTime.Now.ToString("HH:mm:ss tt");
+    private string _ppm = "";
 
-    private void IncrementCount()
+    private async Task IncrementCount()
     {
-        currentCount++;
+        try
+        {
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri("http://mthrowaway488-001-site1.dtempurl.com/api/read/today");
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Accept", "*/*");
+            var response = await httpClient.SendAsync(request);
+            if(response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                var result = JsonSerializer.Deserialize<List<GasRecord>>(content);
+                _ppm = $"{result.FirstOrDefault().Concentration}";
+            }
+        }
+        catch (System.Exception e)
+        {
+            _ppm = e.Message;
+        }
 
-        var request = new NotificationRequest
+        @* var notification = new NotificationRequest
         {
             NotificationId = 1000,
             Title = "Warning",
@@ -25,7 +48,8 @@
             BadgeNumber = 42
         };
 
-        LocalNotificationCenter.Current.Show(request);
+        await LocalNotificationCenter.Current.Show(notification); *@
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
