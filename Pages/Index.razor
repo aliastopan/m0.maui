@@ -5,7 +5,7 @@
 @inject HttpClient httpClient
 
 <p role="time" style="margin: 0px;">@time</p>
-<p role="ppm" style="margin: 0px; font-size: 1.25rem">Konsentrasi: @_ppmValue PPM</p>
+<p role="ppm" style="margin: 0px; font-size: 1.25rem">Konsentrasi: @Singleton.PPM PPM</p>
 
 <table class="table">
     <thead>
@@ -30,7 +30,6 @@
 
 @code
 {
-    private string _ppmValue = "0";
     private string time = DateTime.Now.ToString("HH:mm:ss tt");
     private List<GasRecord> _gasRecords = new();
 
@@ -61,7 +60,7 @@
         if(response.IsSuccessStatusCode)
         {
             var content = response.Content.ReadAsStringAsync().Result;
-            _ppmValue = content;
+            Singleton.PPM = int.Parse(content);
         }
     }
 
