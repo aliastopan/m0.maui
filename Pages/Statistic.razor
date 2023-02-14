@@ -28,11 +28,31 @@
     </tbody>
 </table>
 
+@if(_averages.Count > 0)
+{
+    <SfChart Title="Rata-rata PPM">
+        <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@_graphAvg" XName="X" YName="Y" Type="ChartSeriesType.Line">
+            </ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+}
+
 
 @code
 {
     private List<float> _averages = new();
     private List<string> _dates = new();
+
+    public class ChartData
+    {
+        public string X { get; set;}
+        public double Y {get; set;}
+    }
+
+    public List<ChartData> _graphAvg = new List<ChartData>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -40,6 +60,16 @@
         {
             StateHasChanged();
             await QueryAsync();
+
+            _graphAvg.Clear();
+            for (int i = 0; i < _averages.Count; i++)
+            {
+                _graphAvg.Add(new ChartData
+                {
+                    X = $"H-{i+1}",
+                    Y = (double)_averages[i]
+                });
+            }
             StateHasChanged();
         }
     }
